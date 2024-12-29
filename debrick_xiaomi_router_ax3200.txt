@@ -1,0 +1,30 @@
+mkdir -p /tmp/tftp
+cd /tmp/tftp
+# Stock image should be renamed to TFTP server IP address in hex (Eg. C0A81F64.img), 192.168.31.2 - C0A81F02.img, 192.168.31.50 - C0A81F32.img, 192.168.31.100 - C0A81F64.img
+curl -Ls http://cdn.awsde0-fusion.fds.api.mi-img.com/xiaoqiang/rom/rb01/miwifi_rb01_firmware_bbc77_1.0.71_INT.bin -o C0A81F64.img
+# http://cdn.awsde0-fusion.fds.api.mi-img.com/xiaoqiang/rom/rb01/miwifi_rb01_firmware_36352_1.0.50_INT.bin
+# To grab URL for stock firmware check http://192.168.31.1/cgi-bin/luci/;stok=<stok>/api/xqsystem/check_rom_update
+
+# Check your interface name, in my case it's enp9s0
+ip a
+
+systemctl stop NetworkManager
+systemctl stop firewalld
+systemctl stop systemd-resolved.service
+
+# Check if there's no iptables rules which could block dhcp/tftp traffic (UDP 67, UDP 69)
+iptables -L
+# Check if there are no services running on dhcp/tftp ports (UDP 67, UDP 69)
+netstat -tulpn
+
+ip address flush dev enp0s31f6
+ip address add 192.168.31.100/24 dev enp0s31f6
+
+dnsmasq --no-daemon -i enp0s31f6 --dhcp-range=192.168.31.1,192.168.31.99 --enable-tftp --tftp-root=/tmp/tftp --dhcp-boot=C0A81F64.img -p0 -K --log-dhcp --bootp-dynamic
+
+Power off your device by pulling out power cord from the device
+Push the reset button, keep pushing it and simultaneously put the power cord back on
+Release the reset button when Power LED will start fast blinking
+After successful tftp recovery flash Power LED will start blinking in blue colour, then you can safely restart your router by replugging the power cord (reboot router)
+Please consider doing the Factory Reset if you're planning to stay on that FW
+Re-enable network configuration as before on your laptop/reboot laptop
