@@ -1,0 +1,32 @@
+********************** OPENWRT DAWN CONFIGURATION GUIDE *******************
+
+NOTE: Using OpenWRT LUCI install "wpad-wolfssl" (remove wpad-basic or wpad-mini), so reboot the router!
+
+
+### SSH into each of your wifi/AP nodes and add the following config-lines in /etc/config/wireless to each of your SSIDs:
+
+option bss_transition '1'
+option ieee80211k '1'
+
+
+### Install dawn package
+
+opkg update && opkg install dawn
+
+
+### Edit/update "dawn" config file
+
+vi /etc/config/dawn
+
+config metric 'global'
+       option bandwidth_threshold '24'
+       option kicking '1'
+       option min_number_to_kick '2'
+
+ config metric '802_11g'
+       option initial_score '65'
+
+ config metric '802_11a'
+       option ht_support '7'
+       option vht_support '7'
+       option rssi_weight '1'
