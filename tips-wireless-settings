@@ -1,0 +1,12 @@
+#################### Tips concerning WIFI Settings ####################
+
+openwrt router login LuCI > network > wireless
+
+edit ssid ("virtual" wireless interface) 2.4GHz and 5GHz > Advanced Settings
+set country code = "IT - Italy" (it is an example, set your coutry code)
+set coverage cell density = "Very High" --> minimum rate is 24Mbps, instead of 6Mbps
+
+>>>>> Only wifi 5Ghz <<<<<
+network > wireless > edit SSID 5Ghz > Interface configuration > Advanced Settings --> untick "Disassociate On Low Acknowledgement"
+
+
